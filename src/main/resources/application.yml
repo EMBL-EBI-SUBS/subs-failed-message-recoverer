@@ -1,0 +1,37 @@
+spring:
+  main:
+    web-environment: false
+  rabbitmq:
+    host: mac-subs-001
+
+messageRecover:
+  inputBindingRemovalDelayInSec: 5
+  rabbitMQProp:
+    baseURL: amqp://mac-subs-001
+    exchangeName: usi-1:submission-exchange
+    deadLetterExchangeName: usi-1:dead-letter-exchange
+    deadLetterQueueName: usi-submission-dead-letter
+  qdbProp:
+    baseURL: http://mac-subs-009:9554
+    queue:
+      deadLetterQueueName: failed_messages_queueu
+      basePath: /q
+      inputBasePath: /in
+      outputBasePath: /out
+      inputPath: /fromRabbit
+      outputPath: /toRabbit
+      maxSize: 1g
+      maxPayloadSize: 10m
+      contentType: "application/json; charset=utf-8"
+    messageFilter:
+      grep:
+      from:
+      to:
+      routingKey: this.is.a.routing.key
+      fromId:
+
+
+logging:
+  level: debug
+
+
