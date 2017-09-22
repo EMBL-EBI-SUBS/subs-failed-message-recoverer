@@ -1,15 +1,13 @@
 package uk.ac.ebi.subs.messagerecover.queuemanager;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
 
 /**
  * Input binding configuration between RabbitMQ and QDB.
  */
-@ToString
-@Getter
+@Data
 @NoArgsConstructor
 public class InputBinding {
 

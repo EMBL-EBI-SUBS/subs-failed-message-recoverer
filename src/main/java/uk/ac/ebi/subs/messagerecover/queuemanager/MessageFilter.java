@@ -1,8 +1,6 @@
 package uk.ac.ebi.subs.messagerecover.queuemanager;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
 
 import java.net.URLEncoder;
@@ -15,9 +13,7 @@ import java.util.stream.Collectors;
  * This class is responsible to create q query string for retrieve filtered messages from a given QDB queue.
  * The query string parameters is coming from the application.yml file.
  */
-@ToString
-@Getter
-@Setter
+@Data
 public class MessageFilter {
 
     public static final String MESSAGE_SEPARATOR = "########";

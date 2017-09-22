@@ -1,8 +1,6 @@
 package uk.ac.ebi.subs.messagerecover.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -13,18 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties("messageRecover")
-@ToString
-@Getter
-@Setter
+@Data
 public class RecoverProperties {
 
     private String inputBindingRemovalDelayInSec;
     private RabbitMQProp rabbitMQProp;
     private QdbProp qdbProp;
 
-    @ToString
-    @Getter
-    @Setter
+    @Data
     public static class RabbitMQProp {
         private String baseURL;
         private String exchangeName;
@@ -32,17 +26,13 @@ public class RecoverProperties {
         private String deadLetterQueueName;
     }
 
-    @ToString
-    @Getter
-    @Setter
+    @Data
     public static class QdbProp {
         private String baseURL;
         private Queue queue;
         private MessageFilter messageFilter;
 
-        @ToString
-        @Getter
-        @Setter
+        @Data
         public static class Queue {
             private String deadLetterQueueName;
             private String basePath;
@@ -55,9 +45,7 @@ public class RecoverProperties {
             private String contentType;
         }
 
-        @ToString
-        @Getter
-        @Setter
+        @Data
         public static class MessageFilter {
             private String grep;
             private String from;

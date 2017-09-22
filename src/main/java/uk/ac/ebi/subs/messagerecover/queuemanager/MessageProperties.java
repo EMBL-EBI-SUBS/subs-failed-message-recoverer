@@ -1,13 +1,9 @@
 package uk.ac.ebi.subs.messagerecover.queuemanager;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@ToString
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class MessageProperties {
     private int id;
