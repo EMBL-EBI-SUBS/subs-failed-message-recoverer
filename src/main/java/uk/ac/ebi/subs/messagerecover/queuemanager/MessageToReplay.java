@@ -7,13 +7,13 @@ import lombok.Data;
  * if the message was correct, but it failed because some service was down.
  */
 @Data
-public class MessagesToReplay {
+public class MessageToReplay {
 
     private String routingKey;
     private String body;
     private String bodyToReplay;
 
-    public MessagesToReplay(String routingKey, String body) {
+    public MessageToReplay(String routingKey, String body) {
         this.routingKey = routingKey;
         this.body = body;
     }

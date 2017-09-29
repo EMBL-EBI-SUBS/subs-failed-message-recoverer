@@ -7,9 +7,9 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
-import uk.ac.ebi.subs.messagerecover.queuemanager.MessagesToReplay;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageFilter;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageProperties;
+import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
 import uk.ac.ebi.subs.messagerecover.queuemanager.QDBManager;
 
 import java.io.IOException;
@@ -32,12 +32,26 @@ public class MessageRecoverService {
     private QDBManager qdbManager;
     private RecoverProperties recoverProperties;
     private RabbitMessagingTemplate rabbitMessagingTemplate;
+    private String qdbQueueName;
 
     public MessageRecoverService(RecoverProperties recoverProperties, QDBManager qdbManager,
                                  RabbitMessagingTemplate rabbitMessagingTemplate) {
         this.recoverProperties = recoverProperties;
         this.qdbManager = qdbManager;
         this.rabbitMessagingTemplate = rabbitMessagingTemplate;
+        this.qdbQueueName = recoverProperties.getQdbProp().getQueue().getDeadLetterQueueName();
+    }
+
+    /**
+     * Transfer messages from a specified RabbitMQ queue to a QDB queue.
+     * First it creates the QDB queue, then it creates an input binding between a RabbitMQ queue and a QDB queue.
+     * After a specified amount of time it will remove the above specified input binding
+     * to not have the possibility to create a cyclical link (message routing) between RabbitMQ and QDB.
+     */
+    public void transferMessagesToQDBDeadLetterQueue() {
+        createQDBDeadLetterQueue();
+        addInputBindingToQDBDeadLetterQueue();
+        removeInputBindingFromQDBDeadLetterQueue();
     }
 
     /**
@@ -45,20 +59,14 @@ public class MessageRecoverService {
      *
      * @return the name of the created QDB queue
      */
-    public String createQDBDeadLetterQueue() {
-        String qdbQueueName = recoverProperties.getQdbProp().getQueue().getDeadLetterQueueName();
+    private void createQDBDeadLetterQueue() {
         qdbManager.createQDBDeadLetterQueue(qdbQueueName);
-
-        return qdbQueueName;
     }
 
     /**
      * Add a binding between a RabbitMQ and a QDB queue.
-     *
-     * @param qdbQueueName the name of the QDB queue to bind to the RabbitMQ queue.
-     *                     The name of the RabbitMQ queue has been defined in the application.yml file.
      */
-    public void addInputBindingToQDBDeadLetterQueue(String qdbQueueName) {
+    private void addInputBindingToQDBDeadLetterQueue() {
         String rabbitQueueName = recoverProperties.getRabbitMQProp().getDeadLetterQueueName();
         qdbManager.addInputBindingToQDBDeadLetterQueue(rabbitQueueName, qdbQueueName);
     }
@@ -66,12 +74,14 @@ public class MessageRecoverService {
     /**
      * Remove a binding between a RabbitMQ and a QDB queue.
      * Before removing the binding it waits a defined amount of time (configurable in the application.yml file).
-     *
-     * @param qdbQueueName the name of the QDB queue from remove the binding bind to the RabbitMQ queue.
-     * @throws InterruptedException
      */
-    public void removeInputBindingFromQDBDeadLetterQueue(String qdbQueueName) throws InterruptedException {
-        Thread.sleep(1000 * Integer.valueOf(recoverProperties.getInputBindingRemovalDelayInSec()));
+    private void removeInputBindingFromQDBDeadLetterQueue() {
+        try {
+            Thread.sleep(1000 * Integer.valueOf(recoverProperties.getInputBindingRemovalDelayInSec()));
+        } catch (InterruptedException e) {
+            logger.info("Waiting for removing the input binding is interrupted.\n Error message: {}", e.getMessage());
+            throw new RuntimeException(e.getCause());
+        }
 
         String rabbitQueueName = recoverProperties.getRabbitMQProp().getDeadLetterQueueName();
         qdbManager.removeInputBindingFromQDBDeadLetterQueue(rabbitQueueName, qdbQueueName);
@@ -80,10 +90,9 @@ public class MessageRecoverService {
     /**
      * Retrieves messages with applied filter criteria defined in the application.yml file.
      *
-     * @param qdbQueueName the name of the QDB queue retrieve the message(s) from
-     * @return a filtered {@link List} of {@link MessagesToReplay}
+     * @return a filtered {@link List} of {@link MessageToReplay}
      */
-    public List<MessagesToReplay> readFilterMessagesFromQDBDaedLetterQueue(String qdbQueueName) {
+    public List<MessageToReplay> readFilterMessagesFromQDBDaedLetterQueue() {
         ResponseEntity<String> response = qdbManager.filterMessagesFromQDBDeadLetterQueue(qdbQueueName);
         return parseFailedMessages(response.getBody());
     }
@@ -96,25 +105,25 @@ public class MessageRecoverService {
      * IF THE CASE IS SOMETHING ELSE, THEN THIS METHOD BODY SHOULD BE CHANGED
      * AND IT SHOULD CONTAIN THE FIX OF THE MESSAGES.
      *
-     * @param messagesToReplay a {@link List} of {@link MessagesToReplay} that holds the original failed messages
+     * @param messageToReplay a {@link List} of {@link MessageToReplay} that holds the original failed messages
      *                         and their routing keys
      */
-    public void fixFailedMessages(List<MessagesToReplay> messagesToReplay) {
+    public void fixFailedMessages(List<MessageToReplay> messageToReplay) {
         logger.info("[MessageRecoverService] fixing messages");
 
-        messagesToReplay.forEach(message -> message.setBodyToReplay(message.getBody()));
+        messageToReplay.forEach(message -> message.setBodyToReplay(message.getBody()));
     }
 
     /**
      * Replay the fixed/corrected messages with their original routing key to the given RabbitMQ exchange.
      * The exchange is defined in the application.yml configuration file.
      *
-     * @param messagesToReplay a {@link List} of {@link MessagesToReplay}
+     * @param messageToReplay a {@link List} of {@link MessageToReplay}
      */
-    public void replayFailedMessages(List<MessagesToReplay> messagesToReplay) {
+    public void replayFailedMessages(List<MessageToReplay> messageToReplay) {
         logger.info("[MessageRecoverService] replaying messages");
         RecoverProperties.RabbitMQProp rabbitMqProp = recoverProperties.getRabbitMQProp();
-        messagesToReplay.forEach(
+        messageToReplay.forEach(
                 message -> {
                     logger.info("[MessageRecoverService] replay message: {} with routing key: {}",
                             message.getRoutingKey(), message.getBodyToReplay());
@@ -124,7 +133,7 @@ public class MessageRecoverService {
         );
     }
 
-    private List<MessagesToReplay> parseFailedMessages(String messageBody) {
+    private List<MessageToReplay> parseFailedMessages(String messageBody) {
         if (messageBody == null) {
             return Collections.emptyList();
         }
@@ -136,11 +145,11 @@ public class MessageRecoverService {
                 .collect(Collectors.toList());
     }
 
-    private MessagesToReplay buildFailedMessage(String message) {
+    private MessageToReplay buildFailedMessage(String message) {
         String[] tempList = message.split("\n");
         String messageProperties = tempList[0].substring(tempList[0].indexOf(":{") + 1);
         MessageProperties messagePropertiesJson = convertStringToJSON(messageProperties);
-        return new MessagesToReplay(messagePropertiesJson.getRoutingKey(), tempList[1]);
+        return new MessageToReplay(messagePropertiesJson.getRoutingKey(), tempList[1]);
     }
 
     private MessageProperties convertStringToJSON(String toJson) {
