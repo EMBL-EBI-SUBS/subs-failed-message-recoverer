@@ -1,0 +1,32 @@
+spring:
+  main:
+    web-environment: false
+
+messageRecover:
+  inputBindingRemovalDelayInSec: 5
+  rabbitMQProp:
+    baseURL: amqp://rabbitmq-url
+    exchangeName: exchange-name
+    deadLetterExchangeName: dead-letter-exchange-name
+    deadLetterQueueName: dead-letter-queue-name
+    replayQueueName: test-replay-queue
+  qdbProp:
+    baseURL: http://qdb_url:9554
+    queue:
+      deadLetterQueueName: failed_messages_qdb_queue
+      basePath: /q
+      inputBasePath: /in
+      outputBasePath: /out
+      inputPath: /fromRabbit
+      outputPath: /toRabbit
+      maxSize: 1g
+      maxPayloadSize: 10m
+      contentType: "application/json; charset=utf-8"
+    messageFilter:
+      grep:
+      from:
+      to:
+      routingKey: test.sample.routingKey
+      fromId:
+
+

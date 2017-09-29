@@ -1,5 +1,5 @@
 group 'uk.ac.ebi.subs'
-version '0.1.0-SNAPSHOT'
+version '0.2.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
@@ -33,10 +33,10 @@ configure(allprojects) {
 dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.12'
+
 
     optional "org.springframework.boot:spring-boot-configuration-processor"
-
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.12'
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 }

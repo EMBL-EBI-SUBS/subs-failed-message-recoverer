@@ -2,24 +2,28 @@ package uk.ac.ebi.subs.messagerecover;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import uk.ac.ebi.subs.messagerecover.queuemanager.MessagesToReplay;
+import org.springframework.context.annotation.Profile;
+import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
 import uk.ac.ebi.subs.messagerecover.service.MessageRecoverService;
 
 import java.util.List;
 
 @SpringBootApplication
 @ComponentScan("uk.ac.ebi.subs.messagerecover")
+@Profile("prod")
 public class FailedMessageRecoverApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(FailedMessageRecoverApplication.class);
 
-    @Autowired
-    private MessageRecoverService recovererService;
+    private MessageRecoverService recoverService;
+
+    public FailedMessageRecoverApplication(MessageRecoverService recoverService) {
+        this.recoverService = recoverService;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(FailedMessageRecoverApplication.class, args);
@@ -29,20 +33,15 @@ public class FailedMessageRecoverApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Application has started");
 
-        String qdbQueueName = recovererService.createQDBDeadLetterQueue();
-        recovererService.addInputBindingToQDBDeadLetterQueue(qdbQueueName);
+        recoverService.transferMessagesToQDBDeadLetterQueue();
 
-        // wait for message transfering from RabbitMQ, then removing the input bindings
-        // to avoiding creating a circular message routing
-        recovererService.removeInputBindingFromQDBDeadLetterQueue(qdbQueueName);
-
-        List<MessagesToReplay> messagesToReplay = recovererService.readFilterMessagesFromQDBDaedLetterQueue(qdbQueueName);
+        List<MessageToReplay> messagesToReplay = recoverService.readFilterMessagesFromQDBDaedLetterQueue();
         logger.info("Messages from QDB queue: {}", messagesToReplay);
 
         if (messagesToReplay.size() > 0) {
-            recovererService.fixFailedMessages(messagesToReplay);
+            recoverService.fixFailedMessages(messagesToReplay);
 
-            recovererService.replayFailedMessages(messagesToReplay);
+            recoverService.replayFailedMessages(messagesToReplay);
         } else {
             logger.info("No messages to replay");
         }
