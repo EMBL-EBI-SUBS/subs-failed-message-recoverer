@@ -3,6 +3,7 @@ package uk.ac.ebi.subs.messagerecover;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
 import uk.ac.ebi.subs.messagerecover.service.MessageRecoverService;
+import uk.ac.ebi.subs.messagerecover.util.RabbitMQAndQDBDependentTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.doAnswer;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = FailedMessageRecoverApplicationTest.class)
 @ActiveProfiles("test")
+@Category(RabbitMQAndQDBDependentTest.class)
 public class RecoveryIntegrationTest {
 
     private static Logger logger = LoggerFactory.getLogger(RecoveryIntegrationTest.class);

@@ -44,3 +44,12 @@ dependencies {
 compileJava.dependsOn(processResources)
 
 bootRepackage.enabled = false
+
+task('externalCiTest', type: Test) {
+    useJUnit {
+        excludeCategories 'uk.ac.ebi.subs.BioSamplesDependentTest'
+    }
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
