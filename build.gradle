@@ -47,7 +47,7 @@ bootRepackage.enabled = false
 
 task('externalCiTest', type: Test) {
     useJUnit {
-        excludeCategories 'uk.ac.ebi.subs.BioSamplesDependentTest'
+        excludeCategories 'uk.ac.ebi.subs.messagerecover.util.RabbitMQAndQDBDependentTest'
     }
     testLogging {
         exceptionFormat = 'full'
