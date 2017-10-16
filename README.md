@@ -1,6 +1,6 @@
-# subs-failed-message-recoverer
+# subs-message-recover
 
-[![Build Status](https://travis-ci.org/EMBL-EBI-SUBS/subs-failed-message-recoverer.svg?branch=master)](https://travis-ci.org/EMBL-EBI-SUBS/subs-failed-message-recoverer)
+[![Build Status](https://travis-ci.org/EMBL-EBI-SUBS/subs-message-recover.svg?branch=master)](https://travis-ci.org/EMBL-EBI-SUBS/subs-message-recover)
 
 This applications provides functionality/template to replay a previously failed message to the original exchange with their original routing_key.
 It uses a third party application (QDB) for storing the messages.
