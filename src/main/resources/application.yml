@@ -3,6 +3,8 @@ spring:
     web-environment: false
   rabbitmq:
     host: mac-subs-001
+  profiles:
+    active: prod
 
 messageRecover:
   inputBindingRemovalDelayInSec: 5
@@ -14,7 +16,7 @@ messageRecover:
   qdbProp:
     baseURL: http://mac-subs-009:9554
     queue:
-      deadLetterQueueName: failed_messages_queueu
+      deadLetterQueueName: failed_messages_queue
       basePath: /q
       inputBasePath: /in
       outputBasePath: /out
