@@ -6,7 +6,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Profile;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
 import uk.ac.ebi.subs.messagerecover.service.MessageRecoverService;
 
@@ -14,7 +13,6 @@ import java.util.List;
 
 @SpringBootApplication
 @ComponentScan("uk.ac.ebi.subs.messagerecover")
-@Profile("prod")
 public class FailedMessageRecoverApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(FailedMessageRecoverApplication.class);
