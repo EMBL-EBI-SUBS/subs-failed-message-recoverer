@@ -3,6 +3,7 @@ version '0.2.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
@@ -43,7 +44,10 @@ dependencies {
 
 compileJava.dependsOn(processResources)
 
-bootRepackage.enabled = false
+springBoot {
+    executable = true
+}
+mainClassName = "uk.ac.ebi.subs.messagerecover.FailedMessageRecoverApplication"
 
 task('externalCiTest', type: Test) {
     useJUnit {
