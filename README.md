@@ -49,3 +49,9 @@ The list of the settings:
     - to: filter those messages whose published date is equals or earlier than this setting
     - routingKey: filter messages by routing key
     - fromId: filter messages from QDB internal ID
+  - spring 
+    - config
+      - location: the location of the properties contained with the secrets repo, contains the rabbitmq properties
+    - profiles.
+      - active: the profile name, defaults to connecting to a rabbitmq server on localhost
+

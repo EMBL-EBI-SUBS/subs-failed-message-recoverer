@@ -5,13 +5,13 @@ spring:
 messageRecover:
   inputBindingRemovalDelayInSec: 5
   rabbitMQProp:
-    baseURL: amqp://rabbitmq-url
+    baseURL: amqp://localhost
     exchangeName: exchange-name
     deadLetterExchangeName: dead-letter-exchange-name
     deadLetterQueueName: dead-letter-queue-name
     replayQueueName: test-replay-queue
   qdbProp:
-    baseURL: http://qdb_url:9554
+    baseURL: http://mac-subs-009:9554
     queue:
       deadLetterQueueName: failed_messages_qdb_queue
       basePath: /q

@@ -1,15 +1,10 @@
 spring:
   main:
     web-environment: false
-  rabbitmq:
-    host: mac-subs-001
-  profiles:
-    active: prod
 
 messageRecover:
   inputBindingRemovalDelayInSec: 5
   rabbitMQProp:
-    baseURL: amqp://mac-subs-001
     exchangeName: usi-1:submission-exchange
     deadLetterExchangeName: usi-1:dead-letter-exchange
     deadLetterQueueName: usi-submission-dead-letter

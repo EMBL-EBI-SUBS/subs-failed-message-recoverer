@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
@@ -39,8 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doAnswer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = FailedMessageRecoverApplicationTest.class)
-@ActiveProfiles("test")
+@SpringBootTest(classes = FailedMessageRecoverApplication.class)
 @Category(RabbitMQAndQDBDependentTest.class)
 public class RecoveryIntegrationTest {
 
