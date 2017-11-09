@@ -12,7 +12,6 @@ import uk.ac.ebi.subs.messagerecover.service.MessageRecoverService;
 import java.util.List;
 
 @SpringBootApplication
-@ComponentScan("uk.ac.ebi.subs.messagerecover")
 public class FailedMessageRecoverApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(FailedMessageRecoverApplication.class);
