@@ -16,10 +16,14 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.messagerecover.config.RecoverProperties;
 import uk.ac.ebi.subs.messagerecover.queuemanager.MessageToReplay;
 import uk.ac.ebi.subs.messagerecover.service.MessageRecoverService;
@@ -37,8 +41,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doAnswer;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = FailedMessageRecoverApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = FailedMessageRecoverTestApplication.class)
 @Category(RabbitMQAndQDBDependentTest.class)
 public class RecoveryIntegrationTest {
 

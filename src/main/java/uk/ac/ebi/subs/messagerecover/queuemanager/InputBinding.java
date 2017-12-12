@@ -16,7 +16,11 @@ public class InputBinding {
     private String queue;
 
     public InputBinding(RecoverProperties.RabbitMQProp rabbitProp) {
-        this.url = rabbitProp.getBaseURL();
+        String username = rabbitProp.getUsername().equals("") ? "" : rabbitProp.getUsername();
+        String password = rabbitProp.getPassword().equals("") ? "" : ":" + rabbitProp.getPassword() + "@";
+        String vhost = rabbitProp.getVhost().equals("") ? "" : "/" + rabbitProp.getVhost();
+
+        this.url = "amqp://" + username + password + rabbitProp.getBaseURL() + vhost;
         this.queue = rabbitProp.getDeadLetterQueueName();
     }
 }
