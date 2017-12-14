@@ -77,7 +77,7 @@ public class RecoveryIntegrationTest {
         List<MessageToReplay> messagesToReplay = recoverService.readFilterMessagesFromQDBDaedLetterQueue();
         System.out.println(messagesToReplay);
 
-        doAnswer(RecoveryIntegrationTest::answer).when(recoverService).fixFailedMessages(messagesToReplay);
+        doAnswer(RecoveryIntegrationTest::repairMessages).when(recoverService).fixFailedMessages(messagesToReplay);
 
         recoverService.fixFailedMessages(messagesToReplay);
         System.out.println(messagesToReplay);
@@ -99,7 +99,7 @@ public class RecoveryIntegrationTest {
         }
     }
 
-    private static Object answer(InvocationOnMock invocation) {
+    private static Object repairMessages(InvocationOnMock invocation) {
         Object[] args = invocation.getArguments();
         List<MessageToReplay> messagesToFix = (List<MessageToReplay>) args[0];
         messagesToFix.forEach(messageToFix -> {
