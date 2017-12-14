@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.messagerecover.queuemanager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +21,18 @@ public class QDBManager {
 
     private RecoverProperties recoverProperties;
 
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+
+    @Value("${spring.rabbitmq.virtual-host}")
+    private String vhost;
+
     public QDBManager(RecoverProperties recoverProperties) {
         this.restTemplate = new RestTemplate();
         this.recoverProperties = recoverProperties;
@@ -34,7 +47,9 @@ public class QDBManager {
         logger.info("[QDBManager] Creating an input binding between **{}** RabbitMQ queue and **{}** QDB queue",
                 rabbitQueueName, qdbQueueName);
         RecoverProperties.RabbitMQProp rabbitProp = recoverProperties.getRabbitMQProp();
-        InputBinding inputBinding = new InputBinding(rabbitProp);
+
+
+        InputBinding inputBinding = new InputBinding(rabbitProp, constructUrl());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -60,6 +75,10 @@ public class QDBManager {
                 .query(messageFilter.toQueryString());
 
         return restTemplate.getForEntity(builder.toUriString(), String.class);
+    }
+
+    private String constructUrl() {
+        return "amqp://" + username + ":" + password + "@" + host + "/" + vhost;
     }
 
     private String buildGetMessagesURL(String queueName) {
