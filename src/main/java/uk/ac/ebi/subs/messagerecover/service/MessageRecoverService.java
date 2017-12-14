@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,8 @@ public class MessageRecoverService {
         this.recoverProperties = recoverProperties;
         this.qdbManager = qdbManager;
         this.rabbitMessagingTemplate = rabbitMessagingTemplate;
-        this.qdbQueueName = recoverProperties.getQdbProp().getQueue().getDeadLetterQueueName();
+        this.qdbQueueName = recoverProperties.getQdbProp().getQueue().getDeadLetterQueueName()
+                            + "__" + UUID.randomUUID().toString();
     }
 
     /**

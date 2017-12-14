@@ -48,7 +48,6 @@ public class QDBManager {
                 rabbitQueueName, qdbQueueName);
         RecoverProperties.RabbitMQProp rabbitProp = recoverProperties.getRabbitMQProp();
 
-
         InputBinding inputBinding = new InputBinding(rabbitProp, constructUrl());
 
         HttpHeaders headers = new HttpHeaders();
