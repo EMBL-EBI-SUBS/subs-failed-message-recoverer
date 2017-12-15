@@ -11,7 +11,7 @@ messageRecover:
   qdbProp:
     baseURL: http://mac-subs-009:9554
     queue:
-      deadLetterQueueName: failed_messages_queue
+      deadLetterQueueName: integrationtest
       basePath: /q
       inputBasePath: /in
       outputBasePath: /out

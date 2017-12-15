@@ -20,7 +20,6 @@ public class RecoverProperties {
 
     @Data
     public static class RabbitMQProp {
-        private String baseURL;
         private String exchangeName;
         private String deadLetterExchangeName;
         private String deadLetterQueueName;
